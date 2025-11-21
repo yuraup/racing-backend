@@ -4,6 +4,9 @@ import com.yura.racing_backend.controller.dto.request.RaceStartRequest;
 import java.util.*;
 
 public class Race {
+    private static final int MIN_CARD = 1;
+    private static final int MAX_CARD = 45;
+
     private final Long id;
     private final List<Player> players;
     private final Bot bot;
@@ -21,6 +24,8 @@ public class Race {
         this.status = RaceStatus.READY;
     }
 
+    private final Random random = new Random();
+
     public static Race of(Long raceId, RaceStartRequest request) {
         List<String> playerNames = request.getPlayerNames();
         List<Player> players = new ArrayList<>();
@@ -36,32 +41,30 @@ public class Race {
         return new Race(raceId, players, bot, totalRounds);
     }
 
+    private List<Integer> createRandomCards(int count) {
+        List<Integer> cards = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            int card = random.nextInt(MAX_CARD - MIN_CARD + 1) + MIN_CARD;
+            cards.add(card);
+        }
+       return cards;
+    }
+
     public void distributeCards() {
         if (status != RaceStatus.READY) {
             return;
         }
 
-        Random random = new Random();
-
         for (Player player : players) {
-            List<Integer> playerCards = new ArrayList<>();
-            for (int i = 0; i < totalRounds; i++) {
-                int card = random.nextInt(45 )+1;
-                playerCards.add(card);
-            }
-            player.dealCards(playerCards);
+            player.dealCards(createRandomCards(totalRounds));
         }
 
         if (bot != null) {
-            List<Integer> botCards = new ArrayList<>();
-            for (int i = 0; i < totalRounds; i++) {
-                int card = random.nextInt(45) +1;
-                botCards.add(card);
-            }
-            bot.dealCards(botCards);
+         bot.dealCards(createRandomCards(totalRounds));
         }
         status = RaceStatus.IN_PROGRESS;
     }
+
 
     public void submitCard(int roundNumber, Long playerId, int cardNumber) {
         validateRoundNumber(roundNumber);
