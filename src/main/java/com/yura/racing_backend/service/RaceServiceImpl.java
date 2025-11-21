@@ -6,6 +6,8 @@ import com.yura.racing_backend.controller.dto.response.RaceStatusResponse;
 import com.yura.racing_backend.controller.dto.response.RoundResultResponse;
 import com.yura.racing_backend.domain.Race;
 import com.yura.racing_backend.domain.RoundResult;
+import com.yura.racing_backend.global.error.CustomException;
+import com.yura.racing_backend.global.error.ErrorCode;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -28,7 +30,7 @@ public class RaceServiceImpl implements RaceService {
     private Race findRaceOrThrow(Long raceId) {
         Race race = raceStore.get(raceId);
         if (race == null) {
-            throw new IllegalArgumentException("Race not found. id=" + raceId);
+            throw new CustomException(ErrorCode.INVALID_RACE);
         }
         return race;
     }

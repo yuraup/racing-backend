@@ -1,5 +1,8 @@
 package com.yura.racing_backend.domain;
 
+import com.yura.racing_backend.global.error.CustomException;
+import com.yura.racing_backend.global.error.ErrorCode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +26,7 @@ public class Bot {
 
     public int getCardForRound(int roundNumber) {
         if (roundNumber < 1 || roundNumber > cards.size()) {
-            throw new IllegalArgumentException("봇에게 해당 라운드의 카드가 없습니다. round=" + roundNumber);
+            throw new CustomException(ErrorCode.INVALID_ROUND);
         }
         return cards.get(roundNumber - 1);
     }

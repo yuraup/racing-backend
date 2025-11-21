@@ -1,6 +1,9 @@
 package com.yura.racing_backend.domain;
 
 import com.yura.racing_backend.controller.dto.request.RaceStartRequest;
+import com.yura.racing_backend.global.error.CustomException;
+import com.yura.racing_backend.global.error.ErrorCode;
+
 import java.util.*;
 
 public class Race {
@@ -15,6 +18,8 @@ public class Race {
     private RaceStatus status;
     private final Map<Integer, Round> rounds = new HashMap<>();
 
+    private final Random random = new Random();
+
     public Race(Long id, List<Player> players, Bot bot, int totalRounds) {
         this.id = id;
         this.players = players;
@@ -24,7 +29,6 @@ public class Race {
         this.status = RaceStatus.READY;
     }
 
-    private final Random random = new Random();
 
     public static Race of(Long raceId, RaceStartRequest request) {
         List<String> playerNames = request.getPlayerNames();
@@ -68,13 +72,9 @@ public class Race {
 
     public void submitCard(int roundNumber, Long playerId, int cardNumber) {
         validateRoundNumber(roundNumber);
-
         Player player = findPlayerById(playerId);
-
-        if (!player.hasCard(cardNumber)) {
-            throw new IllegalArgumentException(player.getId() + "가 보유하지 않은"+ cardNumber +"카드를 제출했습니다.");
-        }
         player.useCard(cardNumber);
+
         Round round = rounds.computeIfAbsent(roundNumber, Round::new);
         round.submitPlayerCard(player.getId(), cardNumber);
     }
@@ -84,7 +84,7 @@ public class Race {
 
         Round round = rounds.get(roundNumber);
         if (round == null || round.getPlayerCards().isEmpty()) {
-            throw new IllegalStateException("아직 카드를 제출하지 않은 라운드입니다.");
+         throw new CustomException(ErrorCode.ROUND_NOT_READY);
         }
 
         if (bot != null && round.getBotCardNumber() == null) {
@@ -144,7 +144,7 @@ public class Race {
 
     private void validateRoundNumber(int roundNumber) {
         if (roundNumber < 1 || roundNumber > totalRounds) {
-            throw new IllegalArgumentException("유효하지 않은 라운드 번호입니다. round=" + roundNumber);
+           throw new CustomException(ErrorCode.INVALID_ROUND);
         }
     }
 
@@ -152,7 +152,7 @@ public class Race {
         return players.stream()
                 .filter(player -> player.getId().equals(playerId))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 ID의 플레이어가 없습니다. id=" + playerId));
+                .orElseThrow(() -> new CustomException(ErrorCode.INVALID_PLAYER));
     }
 
     public Long getId() {

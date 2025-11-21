@@ -1,5 +1,8 @@
 package com.yura.racing_backend.domain;
 
+import com.yura.racing_backend.global.error.CustomException;
+import com.yura.racing_backend.global.error.ErrorCode;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -47,10 +50,6 @@ public class Player {
 
     public void useCard(int cardNumber) {
         boolean removed = cards.remove(Integer.valueOf(cardNumber));
-        if (!removed) {
-            throw new IllegalArgumentException(
-                    id + "가 보유하지 않은"+ cardNumber +"카드를 제출했습니다."
-            );
-        }
+        if (!removed) throw new CustomException(ErrorCode.INVALID_CARD);
     }
 }
