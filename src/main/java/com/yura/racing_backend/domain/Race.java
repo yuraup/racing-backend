@@ -37,9 +37,30 @@ public class Race {
     }
 
     public void distributeCards() {
-        if (status == RaceStatus.READY) {
-            status = RaceStatus.IN_PROGRESS;
+        if (status != RaceStatus.READY) {
+            return;
         }
+
+        Random random = new Random();
+
+        for (Player player : players) {
+            List<Integer> playerCards = new ArrayList<>();
+            for (int i = 0; i < totalRounds; i++) {
+                int card = random.nextInt(45 )+1;
+                playerCards.add(card);
+            }
+            player.dealCards(playerCards);
+        }
+
+        if (bot != null) {
+            List<Integer> botCards = new ArrayList<>();
+            for (int i = 0; i < totalRounds; i++) {
+                int card = random.nextInt(45) +1;
+                botCards.add(card);
+            }
+            bot.dealCards(botCards);
+        }
+        status = RaceStatus.IN_PROGRESS;
     }
 
     public void submitCard(int roundNumber, Long playerId, int cardNumber) {
@@ -47,6 +68,10 @@ public class Race {
 
         Player player = findPlayerById(playerId);
 
+        if (!player.hasCard(cardNumber)) {
+            throw new IllegalArgumentException(player.getId() + "가 보유하지 않은"+ cardNumber +"카드를 제출했습니다.");
+        }
+        player.useCard(cardNumber);
         Round round = rounds.computeIfAbsent(roundNumber, Round::new);
         round.submitPlayerCard(player.getId(), cardNumber);
     }
@@ -59,10 +84,8 @@ public class Race {
             throw new IllegalStateException("아직 카드를 제출하지 않은 라운드입니다.");
         }
 
-        Random random = new Random();
-
         if (bot != null && round.getBotCardNumber() == null) {
-            int botCard = random.nextInt(45) + 1;
+            int botCard = bot.getCardForRound(roundNumber);
             round.submitBotCard(botCard);
         }
 
