@@ -19,20 +19,20 @@ public class RaceController {
     }
 
     @PostMapping("/start")
-    public ResponseEntity<Long> createRace(@RequestBody RaceStartRequest request) {
-        Long raceId = raceService.createRace(request);
+    public ResponseEntity<String> createRace(@RequestBody RaceStartRequest request) {
+        String raceId = raceService.createRace(request);
         return ResponseEntity.ok(raceId);
     }
 
     @PostMapping("/{raceId}/distribute")
-    public ResponseEntity<Void> distributeCards(@PathVariable Long raceId) {
+    public ResponseEntity<Void> distributeCards(@PathVariable String raceId) {
         raceService.distributeCards(raceId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{raceId}/cards")
     public ResponseEntity<Void> submitCard(
-            @PathVariable Long raceId,
+            @PathVariable String raceId,
             @RequestParam("round") int round,
             @RequestBody CardSubmitRequest request
     ) {
@@ -42,7 +42,7 @@ public class RaceController {
 
     @PostMapping("/{raceId}/rounds/{roundNumber}/judge")
     public ResponseEntity<RoundResultResponse> judgeRound(
-            @PathVariable Long raceId,
+            @PathVariable String raceId,
             @PathVariable int roundNumber
     ) {
         RoundResultResponse response = raceService.judgeRound(raceId, roundNumber);
@@ -50,13 +50,13 @@ public class RaceController {
     }
 
     @GetMapping("/{raceId}/status")
-    public ResponseEntity<RaceStatusResponse> getStatus(@PathVariable Long raceId) {
+    public ResponseEntity<RaceStatusResponse> getStatus(@PathVariable String raceId) {
         RaceStatusResponse response = raceService.getRaceStatus(raceId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{raceId}/finish")
-    public ResponseEntity<Void> finishRace(@PathVariable Long raceId) {
+    public ResponseEntity<Void> finishRace(@PathVariable String raceId) {
         raceService.finishRace(raceId);
         return ResponseEntity.ok().build();
     }

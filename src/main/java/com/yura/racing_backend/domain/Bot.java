@@ -9,11 +9,12 @@ import java.util.List;
 
 public class Bot {
     private final String id;
-    private final String name = "BOT";
+    private final String name;
     private final List<Integer> cards = new ArrayList<>();
 
-    public Bot(String id) {
+    public Bot(String id, String name) {
         this.id = id;
+        this.name = name;
     }
 
     public String getId() {

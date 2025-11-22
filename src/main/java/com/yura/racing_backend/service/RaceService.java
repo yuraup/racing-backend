@@ -7,15 +7,15 @@ import com.yura.racing_backend.controller.dto.response.RoundResultResponse;
 
 public interface RaceService {
 
-    Long createRace(RaceStartRequest request);
+    String createRace(RaceStartRequest request);
 
-    void distributeCards(Long raceId);
+    void distributeCards(String raceId);
 
-    void submitCard(Long raceId, int round, CardSubmitRequest request);
+    void submitCard(String raceId, int round, CardSubmitRequest request);
 
-    RoundResultResponse judgeRound(Long raceId, int round);
+    RoundResultResponse judgeRound(String raceId, int round);
 
-    RaceStatusResponse getRaceStatus(Long raceId);
+    RaceStatusResponse getRaceStatus(String raceId);
 
-    void finishRace(Long raceId);
+    void finishRace(String raceId);
 }

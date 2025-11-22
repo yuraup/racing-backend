@@ -11,23 +11,22 @@ import com.yura.racing_backend.global.error.ErrorCode;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 public class RaceServiceImpl implements RaceService {
-    private final Map<Long, Race> raceStore = new ConcurrentHashMap<>();
-    private final AtomicLong raceIdSequence = new AtomicLong(1);
+    private final Map<String, Race> raceStore = new ConcurrentHashMap<>();
 
     @Override
-    public Long createRace(RaceStartRequest request) {
-        Long raceId = raceIdSequence.getAndIncrement();
+    public String createRace(RaceStartRequest request) {
+        String raceId = "r_" + UUID.randomUUID().toString().substring(0, 8);
         Race race = Race.of(raceId, request);
         raceStore.put(raceId, race);
         return raceId;
     }
 
-    private Race findRaceOrThrow(Long raceId) {
+    private Race findRaceOrThrow(String raceId) {
         Race race = raceStore.get(raceId);
         if (race == null) {
             throw new CustomException(ErrorCode.INVALID_RACE);
@@ -36,32 +35,32 @@ public class RaceServiceImpl implements RaceService {
     }
 
     @Override
-    public void distributeCards(Long raceId) {
+    public void distributeCards(String raceId) {
         Race race = findRaceOrThrow(raceId);
         race.distributeCards();
     }
 
     @Override
-    public void submitCard(Long raceId, int round, CardSubmitRequest request) {
+    public void submitCard(String raceId, int round, CardSubmitRequest request) {
         Race race = findRaceOrThrow(raceId);
         race.submitCard(round, request.getPlayerId(), request.getCardNumber());
     }
 
     @Override
-    public RoundResultResponse judgeRound(Long raceId, int round) {
+    public RoundResultResponse judgeRound(String raceId, int round) {
         Race race = findRaceOrThrow(raceId);
         RoundResult result = race.judgeRound(round);
         return RoundResultResponse.from(result);
     }
 
     @Override
-    public RaceStatusResponse getRaceStatus(Long raceId) {
+    public RaceStatusResponse getRaceStatus(String raceId) {
         Race race = findRaceOrThrow(raceId);
         return RaceStatusResponse.from(race);
     }
 
     @Override
-    public void finishRace(Long raceId) {
+    public void finishRace(String raceId) {
         Race race = findRaceOrThrow(raceId);
         race.finish();
     }

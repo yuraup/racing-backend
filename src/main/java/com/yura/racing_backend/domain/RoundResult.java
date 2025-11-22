@@ -10,11 +10,13 @@ public class RoundResult {
     private final Map<String, Integer> playerCards;
     private final Map<String, Integer> botCards;
 
-    public RoundResult(int roundNumber,
-                       List<Player> players,
-                       List<Bot> bots,
-                       Map<String, Integer> playerCards,
-                       Map<String, Integer> botCards) {
+    public RoundResult(
+            int roundNumber,
+            List<Player> players,
+            List<Bot> bots,
+            Map<String, Integer> playerCards,
+            Map<String, Integer> botCards
+    ) {
         this.roundNumber = roundNumber;
         this.players = players;
         this.bots = bots;

@@ -44,10 +44,6 @@ public class Player {
         return Collections.unmodifiableList(cards);
     }
 
-    public boolean hasCard(int cardNumber) {
-        return cards.contains(cardNumber);
-    }
-
     public void useCard(int cardNumber) {
         boolean removed = cards.remove(Integer.valueOf(cardNumber));
         if (!removed) throw new CustomException(ErrorCode.INVALID_CARD);
