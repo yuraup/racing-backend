@@ -1,14 +1,14 @@
 package com.yura.racing_backend.controller.dto.request;
 
 public class CardSubmitRequest {
-    private Long playerId;
+    private String playerId;
     private int cardNumber;
 
-    public Long getPlayerId(){
+    public String getPlayerId() {
         return playerId;
     }
 
-    public int getCardNumber(){
+    public int getCardNumber() {
         return cardNumber;
     }
 }

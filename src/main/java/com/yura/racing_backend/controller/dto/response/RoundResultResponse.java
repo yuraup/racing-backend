@@ -11,46 +11,68 @@ import java.util.stream.Collectors;
 
 public class RoundResultResponse {
 
-    private int roundNumber;
-    private List<PlayerInfo> players;
-    private List<BotInfo> bots;
-    private List<CardInfo> cards;
+    private final int roundNumber;
+    private final List<PlayerInfo> players;
+    private final List<BotInfo> bots;
+    private final List<CardInfo> cards;
 
-    public RoundResultResponse(int roundNumber, List<PlayerInfo> players, List<BotInfo> bots, List<CardInfo> cards) {
+    public RoundResultResponse(
+            int roundNumber,
+            List<PlayerInfo> players,
+            List<BotInfo> bots,
+            List<CardInfo> cards
+    ) {
         this.roundNumber = roundNumber;
         this.players = players;
         this.bots = bots;
         this.cards = cards;
     }
 
-    public static RoundResultResponse from(RoundResult result) {
+    public int getRoundNumber() {
+        return roundNumber;
+    }
 
+    public List<PlayerInfo> getPlayers() {
+        return players;
+    }
+
+    public List<BotInfo> getBots() {
+        return bots;
+    }
+
+    public List<CardInfo> getCards() {
+        return cards;
+    }
+
+    public static RoundResultResponse from(RoundResult result) {
         List<PlayerInfo> playerInfos = result.getPlayers().stream()
-                .map(p -> new PlayerInfo(p.getName(), p.getScore()))
+                .map(player -> new PlayerInfo(player.getName(), player.getScore()))
                 .collect(Collectors.toList());
 
         List<BotInfo> botInfos = new ArrayList<>();
-        Map<Long, Integer> botCards = result.getBotCards();
+        Map<String, Integer> botCards = result.getBotCards();
 
         for (Bot bot : result.getBots()) {
             Integer cardNumber = botCards.get(bot.getId());
-            botInfos.add(new BotInfo(bot.getName(), cardNumber != null ? cardNumber : -1));
+            if (cardNumber != null) {
+                botInfos.add(new BotInfo(bot.getName(), cardNumber));
+            }
         }
 
         List<CardInfo> cardInfos = new ArrayList<>();
-        Map<Long, Integer> playerCards = result.getPlayerCards();
+        Map<String, Integer> playerCards = result.getPlayerCards();
 
         for (Player player : result.getPlayers()) {
-            Integer card = playerCards.get(player.getId());
-            if (card != null) {
-                cardInfos.add(new CardInfo(player.getName(), card));
+            Integer cardNumber = playerCards.get(player.getId());
+            if (cardNumber != null) {
+                cardInfos.add(new CardInfo(player.getName(), cardNumber));
             }
         }
 
         for (Bot bot : result.getBots()) {
-            Integer card = botCards.get(bot.getId());
-            if (card != null) {
-                cardInfos.add(new CardInfo(bot.getName(), card));
+            Integer cardNumber = botCards.get(bot.getId());
+            if (cardNumber != null) {
+                cardInfos.add(new CardInfo(bot.getName(), cardNumber));
             }
         }
 

@@ -18,21 +18,18 @@ public class RaceController {
         this.raceService = raceService;
     }
 
-    // 레이스 생성
     @PostMapping("/start")
     public ResponseEntity<Long> createRace(@RequestBody RaceStartRequest request) {
         Long raceId = raceService.createRace(request);
         return ResponseEntity.ok(raceId);
     }
 
-    // 카드 분배
     @PostMapping("/{raceId}/distribute")
     public ResponseEntity<Void> distributeCards(@PathVariable Long raceId) {
         raceService.distributeCards(raceId);
         return ResponseEntity.ok().build();
     }
 
-    // 카드 제출
     @PostMapping("/{raceId}/cards")
     public ResponseEntity<Void> submitCard(
             @PathVariable Long raceId,
@@ -43,7 +40,6 @@ public class RaceController {
         return ResponseEntity.ok().build();
     }
 
-    // 라운드 판정
     @PostMapping("/{raceId}/rounds/{roundNumber}/judge")
     public ResponseEntity<RoundResultResponse> judgeRound(
             @PathVariable Long raceId,
@@ -53,14 +49,12 @@ public class RaceController {
         return ResponseEntity.ok(response);
     }
 
-    // 레이스 상태 조회
     @GetMapping("/{raceId}/status")
     public ResponseEntity<RaceStatusResponse> getStatus(@PathVariable Long raceId) {
         RaceStatusResponse response = raceService.getRaceStatus(raceId);
         return ResponseEntity.ok(response);
     }
 
-    // 레이스 종료
     @PostMapping("/{raceId}/finish")
     public ResponseEntity<Void> finishRace(@PathVariable Long raceId) {
         raceService.finishRace(raceId);

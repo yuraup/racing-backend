@@ -8,18 +8,18 @@ import java.util.Collections;
 import java.util.List;
 
 public class Player {
-    private final Long id;
+    private final String id;
     private final String name;
     private int score;
     private final List<Integer> cards = new ArrayList<>();
 
-    public Player(Long id, String name) {
+    public Player(String id, String name) {
         this.id = id;
         this.name = name;
         this.score = 0;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
