@@ -1,22 +1,19 @@
 package com.yura.racing_backend.controller.dto.request;
 
-import java.util.List;
-
 public class RaceStartRequest {
-    private List<String> playerNames;
-    private boolean botEnabled;
     private int totalRounds;
-
-    public List<String> getPlayerNames() {
-        return playerNames;
-    }
-
-    public boolean isBotEnabled() {
-        return botEnabled;
-    }
+    private int botNumbers;
+    private String playerName;
 
     public int getTotalRounds() {
         return totalRounds;
     }
 
+    public int getBotNumbers() {
+        return botNumbers;
+    }
+
+    public String getPlayerName() {
+        return playerName;
+    }
 }

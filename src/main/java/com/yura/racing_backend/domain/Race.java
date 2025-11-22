@@ -29,17 +29,14 @@ public class Race {
         this.status = RaceStatus.READY;
     }
 
-
     public static Race of(Long raceId, RaceStartRequest request) {
-        List<String> playerNames = request.getPlayerNames();
-        List<Player> players = new ArrayList<>();
 
-        long playerIdSequence = 1L;
-        for (String name : playerNames) {
-            players.add(new Player(playerIdSequence++, name));
-        }
+        Player me = new Player(1L, request.getPlayerName());
+        List<Player> players = List.of(me);
 
-        Bot bot = request.isBotEnabled() ? new Bot() : null;
+        int botNumbers = Math.max(0, Math.min(1, request.getBotNumbers()));
+        Bot bot = (botNumbers >= 1) ? new Bot() : null;
+
         int totalRounds = request.getTotalRounds();
 
         return new Race(raceId, players, bot, totalRounds);
@@ -51,7 +48,7 @@ public class Race {
             int card = random.nextInt(MAX_CARD - MIN_CARD + 1) + MIN_CARD;
             cards.add(card);
         }
-       return cards;
+        return cards;
     }
 
     public void distributeCards() {
@@ -64,11 +61,11 @@ public class Race {
         }
 
         if (bot != null) {
-         bot.dealCards(createRandomCards(totalRounds));
+            bot.dealCards(createRandomCards(totalRounds));
         }
+
         status = RaceStatus.IN_PROGRESS;
     }
-
 
     public void submitCard(int roundNumber, Long playerId, int cardNumber) {
         validateRoundNumber(roundNumber);
@@ -84,7 +81,7 @@ public class Race {
 
         Round round = rounds.get(roundNumber);
         if (round == null || round.getPlayerCards().isEmpty()) {
-         throw new CustomException(ErrorCode.ROUND_NOT_READY);
+            throw new CustomException(ErrorCode.ROUND_NOT_READY);
         }
 
         if (bot != null && round.getBotCardNumber() == null) {
@@ -100,9 +97,7 @@ public class Race {
 
         for (Player player : players) {
             Integer cardNumber = playerCards.get(player.getId());
-            if (cardNumber == null) {
-                continue;
-            }
+            if (cardNumber == null) continue;
 
             if (cardNumber > max) {
                 max = cardNumber;
@@ -117,17 +112,11 @@ public class Race {
             winners.clear();
         }
 
-        for (Player winner : winners) {
-            winner.increaseScore();
-        }
+        for (Player winner : winners) winner.increaseScore();
 
         currentRound = roundNumber;
-        if (status == RaceStatus.READY) {
-            status = RaceStatus.IN_PROGRESS;
-        }
-        if (currentRound == totalRounds) {
-            status = RaceStatus.FINISHED;
-        }
+        if (status == RaceStatus.READY) status = RaceStatus.IN_PROGRESS;
+        if (currentRound == totalRounds) status = RaceStatus.FINISHED;
 
         return new RoundResult(
                 round.getRoundNumber(),
@@ -144,7 +133,7 @@ public class Race {
 
     private void validateRoundNumber(int roundNumber) {
         if (roundNumber < 1 || roundNumber > totalRounds) {
-           throw new CustomException(ErrorCode.INVALID_ROUND);
+            throw new CustomException(ErrorCode.INVALID_ROUND);
         }
     }
 
