@@ -41,7 +41,6 @@ public class RaceServiceImpl implements RaceService {
         race.distributeCards();
     }
 
-
     @Override
     public void submitCard(Long raceId, int round, CardSubmitRequest request) {
         Race race = findRaceOrThrow(raceId);
@@ -50,9 +49,9 @@ public class RaceServiceImpl implements RaceService {
 
     @Override
     public RoundResultResponse judgeRound(Long raceId, int round) {
-       Race race = findRaceOrThrow(raceId);
-       RoundResult result = race.judgeRound(round);
-       return RoundResultResponse.from(result);
+        Race race = findRaceOrThrow(raceId);
+        RoundResult result = race.judgeRound(round);
+        return RoundResultResponse.from(result);
     }
 
     @Override

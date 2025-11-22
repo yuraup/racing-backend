@@ -7,12 +7,13 @@ import com.yura.racing_backend.global.error.ErrorCode;
 import java.util.*;
 
 public class Race {
+
     private static final int MIN_CARD = 1;
     private static final int MAX_CARD = 45;
 
     private final Long id;
     private final List<Player> players;
-    private final Bot bot;
+    private final List<Bot> bots;
     private final int totalRounds;
     private int currentRound;
     private RaceStatus status;
@@ -20,10 +21,10 @@ public class Race {
 
     private final Random random = new Random();
 
-    public Race(Long id, List<Player> players, Bot bot, int totalRounds) {
+    public Race(Long id, List<Player> players, List<Bot> bots, int totalRounds) {
         this.id = id;
         this.players = players;
-        this.bot = bot;
+        this.bots = bots;
         this.totalRounds = totalRounds;
         this.currentRound = 0;
         this.status = RaceStatus.READY;
@@ -34,12 +35,15 @@ public class Race {
         Player me = new Player(1L, request.getPlayerName());
         List<Player> players = List.of(me);
 
-        int botNumbers = Math.max(0, Math.min(1, request.getBotNumbers()));
-        Bot bot = (botNumbers >= 1) ? new Bot() : null;
+        int botCount = Math.max(1, Math.min(2, request.getBotNumbers()));
+        List<Bot> bots = new ArrayList<>();
+
+        for (int i = 0; i < botCount; i++) {
+            bots.add(new Bot((long) (i + 1)));
+        }
 
         int totalRounds = request.getTotalRounds();
-
-        return new Race(raceId, players, bot, totalRounds);
+        return new Race(raceId, players, bots, totalRounds);
     }
 
     private List<Integer> createRandomCards(int count) {
@@ -52,15 +56,13 @@ public class Race {
     }
 
     public void distributeCards() {
-        if (status != RaceStatus.READY) {
-            return;
-        }
+        if (status != RaceStatus.READY) return;
 
         for (Player player : players) {
             player.dealCards(createRandomCards(totalRounds));
         }
 
-        if (bot != null) {
+        for (Bot bot : bots) {
             bot.dealCards(createRandomCards(totalRounds));
         }
 
@@ -78,38 +80,36 @@ public class Race {
 
     public RoundResult judgeRound(int roundNumber) {
         validateRoundNumber(roundNumber);
-
         Round round = rounds.get(roundNumber);
+
         if (round == null || round.getPlayerCards().isEmpty()) {
             throw new CustomException(ErrorCode.ROUND_NOT_READY);
         }
 
-        if (bot != null && round.getBotCardNumber() == null) {
-            int botCard = bot.getCardForRound(roundNumber);
-            round.submitBotCard(botCard);
-        }
+        Map<Long, Integer> botCards = round.getBotCards();
 
-        Map<Long, Integer> playerCards = round.getPlayerCards();
-        Integer botCardNumber = round.getBotCardNumber();
-
-        int max = -1;
-        List<Player> winners = new ArrayList<>();
-
-        for (Player player : players) {
-            Integer cardNumber = playerCards.get(player.getId());
-            if (cardNumber == null) continue;
-
-            if (cardNumber > max) {
-                max = cardNumber;
-                winners.clear();
-                winners.add(player);
-            } else if (cardNumber == max) {
-                winners.add(player);
+        for (Bot bot : bots) {
+            if (!botCards.containsKey(bot.getId())) {
+                int botCard = bot.getCardForRound(roundNumber);
+                round.submitBotCard(bot.getId(), botCard);
             }
         }
 
-        if (botCardNumber != null && botCardNumber > max) {
-            winners.clear();
+        Map<Long, Integer> playerCards = round.getPlayerCards();
+        botCards = round.getBotCards();
+
+        int maxPlayer = playerCards.values().stream().max(Integer::compareTo).orElse(-1);
+        int maxBot = botCards.values().stream().max(Integer::compareTo).orElse(-1);
+
+        List<Player> winners = new ArrayList<>();
+
+        if (maxPlayer >= maxBot) {
+            for (Player player : players) {
+                Integer card = playerCards.get(player.getId());
+                if (card != null && card == maxPlayer) {
+                    winners.add(player);
+                }
+            }
         }
 
         for (Player winner : winners) winner.increaseScore();
@@ -119,11 +119,11 @@ public class Race {
         if (currentRound == totalRounds) status = RaceStatus.FINISHED;
 
         return new RoundResult(
-                round.getRoundNumber(),
+                roundNumber,
                 new ArrayList<>(players),
-                bot,
+                new ArrayList<>(bots),
                 new HashMap<>(playerCards),
-                botCardNumber
+                new HashMap<>(botCards)
         );
     }
 
@@ -139,36 +139,16 @@ public class Race {
 
     private Player findPlayerById(Long playerId) {
         return players.stream()
-                .filter(player -> player.getId().equals(playerId))
+                .filter(p -> p.getId().equals(playerId))
                 .findFirst()
                 .orElseThrow(() -> new CustomException(ErrorCode.INVALID_PLAYER));
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public List<Player> getPlayers() {
-        return players;
-    }
-
-    public Bot getBot() {
-        return bot;
-    }
-
-    public int getTotalRounds() {
-        return totalRounds;
-    }
-
-    public int getCurrentRound() {
-        return currentRound;
-    }
-
-    public RaceStatus getStatus() {
-        return status;
-    }
-
-    public Map<Integer, Round> getRounds() {
-        return Collections.unmodifiableMap(rounds);
-    }
+    public Long getId() { return id; }
+    public List<Player> getPlayers() { return players; }
+    public List<Bot> getBots() { return bots; }
+    public int getTotalRounds() { return totalRounds; }
+    public int getCurrentRound() { return currentRound; }
+    public RaceStatus getStatus() { return status; }
+    public Map<Integer, Round> getRounds() { return Collections.unmodifiableMap(rounds); }
 }
