@@ -2,8 +2,10 @@ package com.yura.racing_backend.service;
 
 import com.yura.racing_backend.controller.dto.request.CardSubmitRequest;
 import com.yura.racing_backend.controller.dto.request.RaceStartRequest;
+import com.yura.racing_backend.controller.dto.response.PlayerCardsResponse;
 import com.yura.racing_backend.controller.dto.response.RaceStatusResponse;
 import com.yura.racing_backend.controller.dto.response.RoundResultResponse;
+import com.yura.racing_backend.domain.Player;
 import com.yura.racing_backend.domain.Race;
 import com.yura.racing_backend.domain.RoundResult;
 import com.yura.racing_backend.global.error.CustomException;
@@ -63,5 +65,18 @@ public class RaceServiceImpl implements RaceService {
     public void finishRace(String raceId) {
         Race race = findRaceOrThrow(raceId);
         race.finish();
+    }
+
+    @Override
+    public PlayerCardsResponse getPlayerCards(String raceId) {
+        Race race = findRaceOrThrow(raceId);
+
+        Player player = race.getPlayers().get(0);
+
+        return new PlayerCardsResponse(
+                player.getId(),
+                player.getName(),
+                player.getCards()
+        );
     }
 }

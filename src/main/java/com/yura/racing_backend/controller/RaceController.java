@@ -2,6 +2,7 @@ package com.yura.racing_backend.controller;
 
 import com.yura.racing_backend.controller.dto.request.CardSubmitRequest;
 import com.yura.racing_backend.controller.dto.request.RaceStartRequest;
+import com.yura.racing_backend.controller.dto.response.PlayerCardsResponse;
 import com.yura.racing_backend.controller.dto.response.RaceStatusResponse;
 import com.yura.racing_backend.controller.dto.response.RoundResultResponse;
 import com.yura.racing_backend.service.RaceService;
@@ -59,5 +60,11 @@ public class RaceController {
     public ResponseEntity<Void> finishRace(@PathVariable String raceId) {
         raceService.finishRace(raceId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{raceId}/player/cards")
+    public ResponseEntity<PlayerCardsResponse> getPlayerCards(@PathVariable String raceId) {
+        PlayerCardsResponse response = raceService.getPlayerCards(raceId);
+        return ResponseEntity.ok(response);
     }
 }

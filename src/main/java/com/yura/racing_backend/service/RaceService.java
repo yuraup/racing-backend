@@ -2,6 +2,7 @@ package com.yura.racing_backend.service;
 
 import com.yura.racing_backend.controller.dto.request.CardSubmitRequest;
 import com.yura.racing_backend.controller.dto.request.RaceStartRequest;
+import com.yura.racing_backend.controller.dto.response.PlayerCardsResponse;
 import com.yura.racing_backend.controller.dto.response.RaceStatusResponse;
 import com.yura.racing_backend.controller.dto.response.RoundResultResponse;
 
@@ -18,4 +19,6 @@ public interface RaceService {
     RaceStatusResponse getRaceStatus(String raceId);
 
     void finishRace(String raceId);
+
+    PlayerCardsResponse getPlayerCards(String raceId);
 }
