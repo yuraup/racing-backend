@@ -31,7 +31,7 @@ class RaceServiceImplTest {
         ReflectionTestUtils.setField(request, "totalRounds", 3);
 
         // when
-        String raceId = raceService.createRace(request);
+        Long raceId = raceService.createRace(request);
         raceService.distributeCards(raceId);
         RaceStatusResponse status = raceService.getRaceStatus(raceId);
 
@@ -49,7 +49,7 @@ class RaceServiceImplTest {
     @DisplayName("잘못된 raceId 조회 시 INVALID_RACE 에러 발생")
     void getStatus_invalidRaceId() {
         // given
-        String invalidRaceId = "invalid_123";
+        Long invalidRaceId = 999L;
 
         // when
         CustomException ex = assertThrows(

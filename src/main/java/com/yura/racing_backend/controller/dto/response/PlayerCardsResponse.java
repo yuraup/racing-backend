@@ -1,5 +1,7 @@
 package com.yura.racing_backend.controller.dto.response;
 
+import com.yura.racing_backend.domain.Player;
+
 import java.util.List;
 
 public class PlayerCardsResponse {
@@ -12,6 +14,14 @@ public class PlayerCardsResponse {
         this.playerId = playerId;
         this.playerName = playerName;
         this.cards = cards;
+    }
+
+    public static PlayerCardsResponse from(Player player) {
+        return new PlayerCardsResponse(
+                player.getId(),
+                player.getName(),
+                player.getCards()
+        );
     }
 
     public String getPlayerId() {

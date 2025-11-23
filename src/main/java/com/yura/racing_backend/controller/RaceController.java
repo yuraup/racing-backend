@@ -19,21 +19,21 @@ public class RaceController {
         this.raceService = raceService;
     }
 
-    @PostMapping("/start")
-    public ResponseEntity<String> createRace(@RequestBody RaceStartRequest request) {
-        String raceId = raceService.createRace(request);
+    @PostMapping
+    public ResponseEntity<Long> createRace(@RequestBody RaceStartRequest request) {
+        Long raceId = raceService.createRace(request);
         return ResponseEntity.ok(raceId);
     }
 
-    @PostMapping("/{raceId}/distribute")
-    public ResponseEntity<Void> distributeCards(@PathVariable String raceId) {
+    @PostMapping("/{raceId}/hands")
+    public ResponseEntity<Void> distributeCards(@PathVariable Long raceId) {
         raceService.distributeCards(raceId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{raceId}/cards")
     public ResponseEntity<Void> submitCard(
-            @PathVariable String raceId,
+            @PathVariable Long raceId,
             @RequestParam("round") int round,
             @RequestBody CardSubmitRequest request
     ) {
@@ -41,9 +41,9 @@ public class RaceController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{raceId}/rounds/{roundNumber}/judge")
+    @PostMapping("/{raceId}/rounds/{roundNumber}/results")
     public ResponseEntity<RoundResultResponse> judgeRound(
-            @PathVariable String raceId,
+            @PathVariable Long raceId,
             @PathVariable int roundNumber
     ) {
         RoundResultResponse response = raceService.judgeRound(raceId, roundNumber);
@@ -51,19 +51,13 @@ public class RaceController {
     }
 
     @GetMapping("/{raceId}/status")
-    public ResponseEntity<RaceStatusResponse> getStatus(@PathVariable String raceId) {
+    public ResponseEntity<RaceStatusResponse> getStatus(@PathVariable Long raceId) {
         RaceStatusResponse response = raceService.getRaceStatus(raceId);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{raceId}/finish")
-    public ResponseEntity<Void> finishRace(@PathVariable String raceId) {
-        raceService.finishRace(raceId);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{raceId}/player/cards")
-    public ResponseEntity<PlayerCardsResponse> getPlayerCards(@PathVariable String raceId) {
+    @GetMapping("/{raceId}/player/hand")
+    public ResponseEntity<PlayerCardsResponse> getPlayerHand(@PathVariable Long raceId) {
         PlayerCardsResponse response = raceService.getPlayerCards(raceId);
         return ResponseEntity.ok(response);
     }
