@@ -22,24 +22,18 @@ Spring Boot 기반의 간단한 레이싱 게임 서버 구현 프로젝트입�
     4. 라운드별 카드 제출 및 승패 판정
     
     5. 현재 경기 상태 조회
-    
-    6. 경기 종료 처리
-
-    7. 백엔드 구조는 **MVC 패턴 + 도메인 중심 설계(Domain Model)**로 구성하였다.
 
 
 ### [API 목록](https://yura-can-do-it.notion.site/api-2b357f19c169804fa990c2ae2801ca29)
 
-| 기능         | 메서드  | 엔드포인트                                           |
-| ---------- | ---- | ----------------------------------------------- |
-| 레이스 생성     | POST | `/api/races/start`                              |
-| 카드 배분      | POST | `/api/races/{raceId}/distribute`                |
-| 플레이어 카드 조회 | GET  | `/api/races/{raceId}/player/cards`              |
-| 카드 제출      | POST | `/api/races/{raceId}/cards?round=`              |
-| 라운드 판정     | POST | `/api/races/{raceId}/rounds/{roundNumber}/judge` |
-| 경기 상태 조회   | GET  | `/api/races/{raceId}/status`                    |
-| 경기 종료      | POST | `/api/races/{raceId}/finish`                    |
-
+| 기능               | 메서드  | 엔드포인트                                           |
+|------------------| ---- | ----------------------------------------------- |
+| 레이스 생성           | POST | `/api/races/start`                              |
+| 카드 배분            | POST | `/api/races/{raceId}/distribute`                |
+| 플레이어 카드(Hand) 조회 | GET  | `/api/races/{raceId}/player/cards`              |
+| 카드 제출            | POST | `/api/races/{raceId}/cards?round=`              |
+| 라운드 판정           | POST | `/api/races/{raceId}/rounds/{roundNumber}/judge` |
+| 경기 상태 조회         | GET  | `/api/races/{raceId}/status`                    |
 
 ### 테스트 관련
 
