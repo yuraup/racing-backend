@@ -5,6 +5,8 @@ import com.yura.racing_backend.global.error.CustomException;
 import com.yura.racing_backend.global.error.ErrorCode;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Race {
     private static final int MIN_CARD = 1;
@@ -49,12 +51,13 @@ public class Race {
     }
 
     private List<Integer> createRandomCards(int count) {
-        List<Integer> cards = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            int card = random.nextInt(MAX_CARD - MIN_CARD + 1) + MIN_CARD;
-            cards.add(card);
-        }
-        return cards;
+        List<Integer> deck = IntStream.rangeClosed(MIN_CARD, MAX_CARD)
+                .boxed()
+                .collect(Collectors.toList());
+
+        Collections.shuffle(deck, random);
+
+        return new ArrayList<>(deck.subList(0, count));
     }
 
     public void distributeCards() {
